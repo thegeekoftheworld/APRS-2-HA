@@ -1,9 +1,9 @@
 
 /*
- * gw.c — APRS-IS <-> Home Assistant bridge (single-file)
+ * aprs-ha-gw.c — APRS-IS <-> Home Assistant bridge (single-file)
  *
  * ✅ Listens on APRS-IS for messages addressed to login_callsign
- * ✅ Accepts ONLY senders whose BASE callsign matches allowed_base_callsign (e.g., K9RCP and K9RCP-*)
+ * ✅ Accepts ONLY senders whose BASE callsign matches allowed_base_callsign (e.g., CALLSIGN and CALLSIGN-*)
  * ✅ OTP (TOTP, 6 digits) for OTP-prefixed commands
  * ✅ "auth" command: "<OTP6> auth" authorizes ONLY the EXACT sender callsign for 5 minutes
  * ✅ During auth window, commands do NOT require OTP: "view IST", "toggle PORCH", "set THERM 70"
@@ -16,10 +16,10 @@
  *
  * Build (Debian/Ubuntu):
  *   apt-get install -y build-essential libcurl4-openssl-dev libssl-dev
- *   gcc -O2 -Wall -Wextra -o gw gw.c -lcurl -lssl -lcrypto
+ *   gcc -O2 -Wall -Wextra -o aprs-ha-gw aprs-ha-gw.c -lcurl -lssl -lcrypto
  *
  * Run:
- *   ./gw -3 /etc/aprs-ha-bridge/config.ini
+ *   ./aprs-ha-gw -3 ./config.ini
  *
  * Notes on lights:
  *   Use services like:
@@ -634,7 +634,7 @@ static void split_service(const char *svc, char *domain, size_t dsz, char *servi
 /* ----------------------------- Sessions (per EXACT sender callsign) ----------------------------- */
 
 typedef struct {
-  char callsign[32];        // exact (e.g., K9RCP-9)
+  char callsign[32];        // exact (e.g., CALLSIGN-9)
   time_t authorized_until;  // auth expiry
   time_t last_otp_accept;   // OTP rate-limit timestamp
 } Session;
